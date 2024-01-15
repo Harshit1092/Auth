@@ -17,16 +17,16 @@ const userSchema=new mongoose.Schema({
     // },
     name:{
         type:String,
-        required:true,
+        // required:true,
     },
     education:{
         type:String,
-        required:true,
+        // required:true,
     },
     mobile:{
         type:Number,
         // unique:true,
-        required:true,
+        // required:true,
     }
 });
 

@@ -11,9 +11,11 @@ const  UserOTPverificationSchema=new Schema({
     },
     createdAt:{
         type:Date,
+        required:true
     },
     expiresAt:{
         type:Date,
+        required:true
     }
 });
 

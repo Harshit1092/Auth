@@ -4,6 +4,7 @@ const UserOTPverification=require('../models/UserOTPverification');
 const bcrypt=require('bcrypt');
 const nodemailer=require('nodemailer');
 const maxAge=3*24*60*60; //jwt token expires in 3 days
+
 const createToken =(id)=>{
     return jwt.sign({id},'secret key from my side',{expiresIn :  maxAge})
 }
@@ -32,9 +33,7 @@ const sendverificationotp=async (result,res)=>{
      
     const ifexist=await UserOTPverification.findOne({email:result.email});
     if(ifexist){
-        ifexist.otp=hashotp;
-        ifexist.createdAt=Date.now();
-        ifexist.expiresAt=Date.now()+2*60*1000;
+        await UserOTPverification.updateOne({email:result.email,otp:hashotp,createdAt:Date.now(),expiresAt:Date.now()+2*60*1000});
     }
     else{
         const newotp=await new UserOTPverification({
@@ -70,51 +69,59 @@ const signup_post = async (req, res) => {
         res.status(400).json('please enter email and otp');
     }
     else{
-        const UserOTPverify=await UserOTPverification.findOne({email:email});
-        if(UserOTPverify){
-            const {_id,expiresAt}=UserOTPverify;
-            const hasedOTP=UserOTPverify.otp;
-            if(expiresAt<=Date.now()){ 
-                await UserOTPverify.deleteOne({_id});
-                return res.status(400).json({error:"otp expired"});
-            }
-            else{
-                const isvalid=await bcrypt.compare(otp.toString(),hasedOTP);
-                if(isvalid){
-                    const newuser=new User(
-                        {
-                            email,
-                            name,
-                            education,
-                            mobile
-                        }
-                    );
-                    newuser.save()
-                    .then((result)=>{
-                        try{
-                            const token=createToken(result._id);
-                            res.cookie('jwt',token,{httpOnly:true,maxAge:maxAge*1000});
-                            return res.status(201).json({user:result.email});
-                        }
-                        catch(err){
-                            res.status(400).json({error:err});
-                        }
-                    })
-                    .catch((err)=>{
-                        console.log(err);
-                        return res.status(400).json({error:"something went wrong"});
-                    })
-                    await UserOTPverify.deleteOne({_id});
-                }
-                else{
-                    return res.status(400).json({error:"invalid otp"});
-                }
-
-            }
-
+        const result=await User.findOne({email:email})
+        
+        if(result){
+            return res.status(400).json({error:"User already exist.Please login."});
         }
         else{
-            return res.status(400).json({error:"email not found. please send otp again"});
+            
+            const UserOTPverify=await UserOTPverification.findOne({email:email});
+            if(UserOTPverify){
+                const {_id,expiresAt}=UserOTPverify;
+                const hasedOTP=UserOTPverify.otp;
+                if(expiresAt<=Date.now()){ 
+                    await UserOTPverify.deleteOne({_id});
+                    return res.status(400).json({error:"otp expired"});
+                }
+                else{
+                    const isvalid=await bcrypt.compare(otp.toString(),hasedOTP);
+                    if(isvalid){
+                        const newuser=new User(
+                            {
+                                email,
+                                name,
+                                education,
+                                mobile
+                            }
+                        );
+                        newuser.save()
+                        .then((result)=>{
+                            try{
+                                const token=createToken(result._id);
+                                res.cookie('jwt',token,{httpOnly:true,maxAge:maxAge*1000});
+                                return res.status(201).json({user:result.email});
+                            }
+                            catch(err){
+                                res.status(400).json({error:err});
+                            }
+                        })
+                        .catch((err)=>{
+                            console.log(err);
+                            return res.status(400).json({error:"something went wrong"});
+                        })
+                        await UserOTPverify.deleteOne({_id});
+                    }
+                    else{
+                        return res.status(400).json({error:"invalid otp"});
+                    }
+
+                }
+
+            }
+            else{
+                return res.status(400).json({error:"OTP not sent. please send otp again"});
+            }
         }
     }
 }
@@ -124,45 +131,52 @@ const login_post = async(req, res) => {
         res.status(400).json('please enter email and otp');
     }
     else{
-        const UserOTPverify=await UserOTPverification.findOne({email:email});
-        if(UserOTPverify){
-            const {_id,expiresAt}=UserOTPverify;
-            const hasedOTP=UserOTPverify.otp;
-            if(expiresAt<=Date.now()){ 
-                await UserOTPverify.deleteOne({_id});
-                return res.status(400).json({error:"otp expired"});
-            }
-            else{
-                const isvalid=await bcrypt.compare(otp.toString(),hasedOTP);
-                if(isvalid){
-                    User.findOne({email:email})
-                    .then((result)=>{
-                        try{
-                            const token=createToken(result._id);
-                            res.cookie('jwt',token,{httpOnly:true,maxAge:maxAge*1000});
-                            return res.status(201).json({user:result.email});
-                        }
-                        catch(err){
-                            res.status(400).json({error:"some error occured"});
-                        }
-                    })
-                    .catch((err)=>{
-                        console.log(err);
-                        return res.status(400).json({error:"something went wrong"});
-                    })
-                    await UserOTPverify.deleteOne({_id});
+        const result =await User.findOne({email:email})
                 
-
-                }
-                else{
-                    return res.status(400).json({error:"invalid otp"});
-                }
-
-            }
-
+        if(!result){
+            return res.status(400).json({error:"User account does not exist. Please signup first."});
         }
         else{
-            return res.status(400).json({error:"email not found. please send otp again"});
+            const UserOTPverify=await UserOTPverification.findOne({email:email});
+            if(UserOTPverify){
+                const {_id,expiresAt}=UserOTPverify;
+                const hasedOTP=UserOTPverify.otp;
+                if(expiresAt<=Date.now()){ 
+                    await UserOTPverify.deleteOne({_id});
+                    return res.status(400).json({error:"otp expired"});
+                }
+                else{
+                    const isvalid=await bcrypt.compare(otp.toString(),hasedOTP);
+                    if(isvalid){
+                        User.findOne({email:email})
+                        .then((result)=>{
+                            try{
+                                const token=createToken(result._id);
+                                res.cookie('jwt',token,{httpOnly:true,maxAge:maxAge*1000});
+                                return res.status(201).json({user:result.email});
+                            }
+                            catch(err){
+                                res.status(400).json({error:"some error occured"});
+                            }
+                        })
+                        .catch((err)=>{
+                            console.log(err);
+                            return res.status(400).json({error:"something went wrong"});
+                        })
+                        await UserOTPverify.deleteOne({_id});
+                    
+
+                    }
+                    else{
+                        return res.status(400).json({error:"invalid otp"});
+                    }
+
+                }
+
+            }
+            else{
+                return res.status(400).json({error:"OTP not sent. please send otp again"});
+            }
         }
     }
 }
@@ -173,15 +187,29 @@ const sendsignupotp_post = (req, res) => {
         return res.status(400).json({error:"please add email"});
     }
     else{
-        UserOTPverification.findOne({email:email})
+        User.findOne({email:email})
         .then((result)=>{
             if(result){
-                return res.status(400).json({error:"email already exist"});
+                return res.status(400).json({error:"User already exist.Please login."});
             }
             else{
-                sendverificationotp({email},res);
+                UserOTPverification.findOne({email:email})
+                .then((result)=>{
+                    if(result){
+                        return res.status(400).json({error:"otp sent.If you want to resend otp then click on resend otp button."});
+                    }
+                    else{
+                        sendverificationotp({email},res);
+                    }
+                })
+                
             }
         })
+        .catch((err)=>{
+            console.log(err);
+            return res.status(400).json({error:"something went wrong"});
+        })
+        
     }
 }
 const sendloginotp_post = (req, res) => {
@@ -191,19 +219,53 @@ const sendloginotp_post = (req, res) => {
         return res.status(400).json({error:"please add email"});
     }
     else{
-        UserOTPverification.findOne({email:email})
+        User.findOne({email:email})
         .then((result)=>{
-            if(result){
-                sendverificationotp({email},res);
-            }
-            else{
+            if(!result){
                 return res.status(400).json({error:"User account does not exist. Please signup first."});
+                    
+               }
+            else{
+                UserOTPverification.findOne({email:email})
+                .then((result)=>{
+                    if(result){
+                        return res.status(400).json({error:"otp sent.If you want to resend otp then click on resend otp button."});
+                    }
+                    else{
+                        sendverificationotp({email},res);
+                    }
+                })
+                .catch((err)=>{
+                    console.log(err);
+                    return res.status(400).json({error:"something went wrong"});
+                })
             }
+        })
+        .catch((err)=>{
+            console.log(err);
+            return res.status(400).json({error:"something went wrong"});
         })
     }
 }
-const verifyotp_post = (req, res) => {
-    res.send('new login');
+
+const resendotp_post = (req, res) => {
+
+    let {email}=req.body;
+    if(!email){
+        return res.status(400).json({error:"please add email"});
+    }
+    else{
+        UserOTPverification.findOne({email:email})
+        .then((result)=>{
+            if(!result){
+                return res.status(400).json({error:"otp not sent even once. please use send otp button"});
+            }
+            else{
+                sendverificationotp({email},res);
+            }
+        })
+    }
+
 }
 
 
@@ -214,5 +276,5 @@ module.exports = {
     login_post,
     sendloginotp_post,
     sendsignupotp_post,
-    verifyotp_post
+    resendotp_post
 };

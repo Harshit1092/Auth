@@ -7,5 +7,5 @@ router.get('/login',authController.login_get);
 router.post('/login',authController.login_post);
 router.post('/sendloginotp',authController.sendloginotp_post);
 router.post('/sendsignupotp',authController.sendsignupotp_post);
-router.post('/resendotp',authController.verifyotp_post);
+router.post('/resendotp',authController.resendotp_post);
 module.exports = router;
