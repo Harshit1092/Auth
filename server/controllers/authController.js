@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const maxAge = 3 * 24 * 60 * 60; //jwt token expires in 3 days
 const dotenv = require('dotenv');
+const expirytime=2; //otp expires in 2 minutes
 dotenv.config();
 
 const createToken = (id) => {
@@ -34,18 +35,21 @@ const sendverificationotp = async (result, res) => {
 
   const ifexist = await UserOTPverification.findOne({ email: result.email });
   if (ifexist) {
-    await UserOTPverification.updateOne({
-      email: result.email,
-      otp: hashotp,
-      createdAt: Date.now(),
-      expiresAt: Date.now() + 2 * 60 * 1000,
-    });
+    try {
+      await UserOTPverification.updateOne(
+         { email : result.email },
+         { $set: { otp:hashotp,createdAt:Date.now(),expiresAt:Date.now()+expirytime*60*100 } }
+      );
+   } catch (e) {
+     console.log(e);
+   }
+
   } else {
     const newotp = await new UserOTPverification({
       email: result.email,
       otp: hashotp,
       createdAt: Date.now(),
-      expiresAt: Date.now() + 2 * 60 * 1000, //otp expires in 2 minutes
+      expiresAt: Date.now() + expirytime * 60 * 1000, //otp expires in 2 minutes
     });
     await newotp.save();
   }
