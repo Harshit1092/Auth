@@ -10,44 +10,16 @@ const userSchema=new mongoose.Schema({
         lowercase:[true,'Email must be in lowercase'],
         validate:[isEmail,'Please enter a valid email']
     },
-    // password:{
-    //     type:String,
-    //     required:true,
-    //     minlength:[6,'Minimum password length is 6 characters']
-    // },
     name:{
-        type:String,
-        // required:true,
+        type:String
     },
     education:{
-        type:String,
-        // required:true,
+        type:String
     },
     mobile:{
-        type:Number,
-        // unique:true,
-        // required:true,
+        type:Number
     }
 });
-
-// userSchema.pre('save',async function(next) {
-//     const salt=await bcrypt.genSalt();
-//     console.log(salt);
-//    this.password=await bcrypt.hash(this.password,salt);
-//     next();
-// });
-
-// userSchema.statics.login=async function(email,password){
-//     const user=await this.findOne({email});
-//     if(user){
-//         const auth=await bcrypt.compare(password,user.password);
-//         if(auth){
-//             return user;
-//         }
-//         throw Error('incorrect password');
-//     }
-//     throw Error('incorrect email');
-// }
 
 const User=mongoose.model('user',userSchema);
 module.exports=User;
