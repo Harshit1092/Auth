@@ -15,6 +15,8 @@ const Login = () => {
   const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isLoading2, setIsLoading2] = useState(false);
+  const [otpSent, setOtpSent] = React.useState(false);
+  const [isLoading3, setIsLoading3] = useState(false);
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -78,6 +80,21 @@ const Login = () => {
       }
     }
   };
+
+  async function onResendOTP(e) {
+    e.preventDefault();
+    try {
+      setIsLoading3(true);
+      const response = await axios.post('http://localhost:8000/resendotp', {
+        email: email,
+      });
+      toast.success('OTP sent successfully 🥰');
+    } catch (error) {
+      toast.error(error.response.data.error);
+    } finally {
+      setIsLoading3(false);
+    }
+  }
 
   return (
     <div>
@@ -164,6 +181,16 @@ const Login = () => {
                     </button>
                   </div>
                 </div>
+                {otpSent && (
+                  <button
+                    className={`ml-2 px-4 py-2 text-sm font-medium  bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 ${
+                      isLoading3 ? 'bg-blue-400' : 'bg-[#2563EB]'
+                    } text-white hover:bg-primary-700`}
+                    onClick={onResendOTP}
+                  >
+                    Resend otp
+                  </button>
+                )}
                 <div className='flex items-center justify-between'>
                   <div className='flex items-start'>
                     {/* <div className='flex items-center h-5'>
@@ -184,12 +211,12 @@ const Login = () => {
                       </label>
                     </div> */}
                   </div>
-                  <Link
+                  {/* <Link
                     to='#'
                     className='text-sm font-medium text-primary-600 hover:underline dark:text-primary-500'
                   >
                     Forgot password?
-                  </Link>
+                  </Link> */}
                 </div>
                 <button
                   type='submit'
