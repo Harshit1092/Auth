@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login, currentUser } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -187,6 +187,7 @@ const Login = () => {
                       isLoading3 ? 'bg-blue-400' : 'bg-[#2563EB]'
                     } text-white hover:bg-primary-700`}
                     onClick={onResendOTP}
+                    disabled={isLoading3}
                   >
                     Resend otp
                   </button>
@@ -223,6 +224,7 @@ const Login = () => {
                   className={`${
                     isLoading2 ? 'bg-blue-400' : 'bg-[#2563EB]'
                   } w-full text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800`}
+                  disabled={isLoading2}
                 >
                   Sign in
                 </button>
