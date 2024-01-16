@@ -52,25 +52,21 @@ const sendverificationotp = async (result, res) => {
   await transporter
     .sendMail(mailOptions)
     .then((data) => {
-      res.status(200).json({ message: 'OTP sent successfully' });
+      res.status(200).json({ message: 'otp sent successfully' });
     })
     .catch(async (err) => {
       console.log(err);
       await UserOTPverification.deleteOne({ email: result.email });
-      res
-        .status(500)
-        .json({ error: 'Internal server error while sending OTP' });
+      res.status(400).json({ error: 'something went wrong111' });
     });
 };
 
 const signup_get = (req, res) => {
   res.send('signup');
 };
-
 const login_get = (req, res) => {
   res.send('login');
 };
-
 const signup_post = async (req, res) => {
   const { email, name, education, mobile, otp } = req.body;
   if (!email || !otp) {
@@ -86,12 +82,12 @@ const signup_post = async (req, res) => {
       const UserOTPverify = await UserOTPverification.findOne({ email: email });
       if (UserOTPverify) {
         const { _id, expiresAt } = UserOTPverify;
-        const hashedOTP = UserOTPverify.otp;
+        const hasedOTP = UserOTPverify.otp;
         if (expiresAt <= Date.now()) {
           await UserOTPverify.deleteOne({ _id });
           return res.status(400).json({ error: 'otp expired' });
         } else {
-          const isvalid = await bcrypt.compare(otp.toString(), hashedOTP);
+          const isvalid = await bcrypt.compare(otp.toString(), hasedOTP);
           if (isvalid) {
             const newuser = new User({
               email,
@@ -138,28 +134,22 @@ const signup_post = async (req, res) => {
 const login_post = async (req, res) => {
   const { email, otp } = req.body;
   if (!email || !otp) {
-    res.status(400).json({ error: 'Please enter both email and OTP.' });
+    res.status(400).json('please enter email and otp');
   } else {
-    try {
-      const existingUser = await User.findOne({ email: email });
+    const result = await User.findOne({ email: email });
 
-      if (!existingUser) {
-        return res
-          .status(400)
-          .json({ error: 'User account does not exist. Please signup first.' });
-      }
-
-      const userOTP = await UserOTPverification.findOne({ email: email });
-
-      if (userOTP) {
-        const { _id, expiresAt } = userOTP;
-        const hashedOTP = userOTP.otp;
-
+    if (!result) {
+      return res
+        .status(400)
+        .json({ error: 'User account does not exist. Please signup first.' });
+    } else {
+      const UserOTPverify = await UserOTPverification.findOne({ email: email });
+      if (UserOTPverify) {
+        const { _id, expiresAt } = UserOTPverify;
+        const hasedOTP = UserOTPverify.otp;
         if (expiresAt <= Date.now()) {
-          await UserOTPverification.deleteOne({ _id });
-          return res
-            .status(400)
-            .json({ error: 'OTP expired. Please request a new one.' });
+          await UserOTPverify.deleteOne({ _id });
+          return res.status(400).json({ error: 'otp expired' });
         } else {
           const isvalid = await bcrypt.compare(otp.toString(), hasedOTP);
           if (isvalid) {
@@ -186,25 +176,17 @@ const login_post = async (req, res) => {
               });
             await UserOTPverify.deleteOne({ _id });
           } else {
-            return res
-              .status(400)
-              .json({ error: 'Invalid OTP. Please try again.' });
+            return res.status(400).json({ error: 'invalid otp' });
           }
         }
       } else {
         return res
           .status(400)
-          .json({ error: 'OTP not sent. Please request a new one.' });
+          .json({ error: 'OTP not sent. please send otp again' });
       }
-    } catch (err) {
-      console.error(err);
-      return res
-        .status(500)
-        .json({ error: 'Internal server error while processing login.' });
     }
   }
 };
-
 const sendsignupotp_post = (req, res) => {
   // res.send('new login');
   let { email } = req.body;

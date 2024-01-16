@@ -11,6 +11,8 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading2, setIsLoading2] = useState(false);
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -20,21 +22,34 @@ const Login = () => {
     setPassword(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email.trim() === '' || password.trim() === '') {
+    if (email.trim() === '') {
       toast.error('Please fill in all fields');
     } else if (!validator.isEmail(email)) {
       console.log('invalid email');
       toast.error('Please enter a valid email address');
-    } else if (password.trim().length < 6) {
-      toast.error('Password must be at least 6 characters long');
     } else {
       // submit the form
       const user = {
         email,
-        password,
+        otp,
       };
+
+      try {
+        setIsLoading2(true);
+        await axios.post('http://localhost:8000/login', user);
+        /*
+        login stuff
+        here we'll set the reponse
+         */
+
+        navigate('/');
+      } catch (error) {
+        toast.error(error.response.data.error);
+      } finally {
+        setIsLoading2(false);
+      }
       console.log(user);
     }
   };
@@ -47,12 +62,17 @@ const Login = () => {
       toast.error('Please enter a valid email address');
     } else {
       try {
+        setIsLoading(true);
         const response = await axios.post(
           'http://localhost:8000/sendloginotp',
           { email: email }
         );
+        console.log(response.data);
+        toast.success('OTP sent successfully 🥰');
       } catch (error) {
-        toast.error(error.message);
+        toast.error(error.response.data.error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -132,8 +152,11 @@ const Login = () => {
                     />
                     <button
                       type='button'
-                      className='ml-2 px-4 py-2 text-sm font-medium  bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 bg-[#2563EB] text-white hover:bg-primary-700  '
                       onClick={handleSendOTP}
+                      disabled={isLoading}
+                      className={`ml-2 px-4 py-2 text-sm font-medium  bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 ${
+                        isLoading ? 'bg-blue-400' : 'bg-[#2563EB]'
+                      } text-white hover:bg-primary-700`}
                     >
                       Send OTP
                     </button>
@@ -151,12 +174,12 @@ const Login = () => {
                       />
                     </div>
                     <div className='ml-3 text-sm'>
-                      <label
+                      {/* <label
                         htmlFor='remember'
                         className='text-gray-500 dark:text-gray-300'
                       >
                         Remember me
-                      </label>
+                      </label> */}
                     </div>
                   </div>
                   <Link
@@ -168,7 +191,9 @@ const Login = () => {
                 </div>
                 <button
                   type='submit'
-                  className='w-full bg-[#2563EB] text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800'
+                  className={`${
+                    isLoading2 ? 'bg-blue-400' : 'bg-[#2563EB]'
+                  } w-full text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800`}
                 >
                   Sign in
                 </button>
