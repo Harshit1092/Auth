@@ -51,7 +51,7 @@ const SignUp = () => {
 
       // make an axios request to the backend
       const response = await axios.post(
-        'http://localhost:5000/api/auth/register',
+        'http://localhost:8000/api/auth/register',
         {
           name,
           email,
