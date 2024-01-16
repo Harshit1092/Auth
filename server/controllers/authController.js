@@ -104,7 +104,7 @@ const signup_post = async (req, res) => {
                             try{
                                 const token=createToken(result._id);
                                 res.cookie('jwt',token,{httpOnly:true,maxAge:maxAge*1000});
-                                return res.status(201).json({email:result.email});
+                                return res.status(201).json({email:result.email, id:result._id, name : result.name});
                             }
                             catch(err){
                                 res.status(400).json({error:err});
@@ -161,7 +161,7 @@ const login_post = async (req, res) => {
                     httpOnly: true,
                     maxAge: maxAge * 1000,
                   });
-                  return res.status(201).json({ user: result.email });
+                  return res.status(201).json({ user: result.email, id: result._id, name : result.name });
                 } catch (err) {
                   res.status(400).json({ error: 'some error occured' });
                 }

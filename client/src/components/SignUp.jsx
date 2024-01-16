@@ -63,11 +63,12 @@ const SignUp = () => {
 
       console.log("signup",response);
 
-      // localStorage.setItem('token', JSON.stringify(response));
+      localStorage.setItem('token', JSON.stringify(response.data));
 
       navigate('/login');
     } catch (error) {
-        console.log(error)
+        console.log(error.response.data.error)
+        toast.error(error.response.data.error);
     }
 
     // console.log(user);
@@ -101,7 +102,8 @@ const SignUp = () => {
           setOtpSent(true); // Update OTP sent state
     }
     catch(error){
-        console.log(error)
+        console.log(error.response.data.error)
+        toast.error(error.response.data.error);
     }
     
   };

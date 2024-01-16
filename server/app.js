@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/authRoutes');
+const blogRoutes = require('./routes/blogRoutes');
 const { auth } = require('./middleware/authMiddleware');
 const dotenv = require('dotenv');
 const cors = require('cors');
@@ -25,3 +26,4 @@ mongoose
 app.get('/', (req, res) => res.send('home'));
 app.use(authRoutes);
 app.use((req, res) => res.status(404).send('404'));
+app.use('/blog',blogRoutes)
