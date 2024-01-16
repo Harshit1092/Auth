@@ -47,8 +47,9 @@ const Login = () => {
         login stuff
         here we'll set the reponse
          */
+
         login(response.data);
-        navigate('/');
+        navigate('/MainScreen');
       } catch (error) {
         toast.error(error.response.data.error);
       } finally {
@@ -72,6 +73,7 @@ const Login = () => {
           { email: email }
         );
         console.log(response.data);
+        setOtpSent(true);
         toast.success('OTP sent successfully 🥰');
       } catch (error) {
         toast.error(error.response.data.error);

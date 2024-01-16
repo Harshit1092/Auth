@@ -59,14 +59,14 @@ const SignUp = () => {
         name,
         email,
         education,
-        phone,
+        mobile: phone,
         otp,
       });
       console.log(response);
 
       signup(response.data);
 
-      navigate('/');
+      navigate('/MainScreen');
     } catch (error) {
       console.log(error.response.data.error);
       toast.error(error.response.data.error);

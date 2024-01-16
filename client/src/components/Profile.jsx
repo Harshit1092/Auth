@@ -1,4 +1,4 @@
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import { useState, useEffect } from 'react';
 import {
   Card,
@@ -13,6 +13,7 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import validator from 'validator';
 
 const Profile = () => {
   const [name, setName] = useState('');
@@ -29,6 +30,7 @@ const Profile = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const { currentUser } = useAuth();
+  //   console.log(currentUser);
 
   useEffect(() => {
     async function fetchData() {
@@ -36,11 +38,11 @@ const Profile = () => {
         const response = await axios.get(
           `http://localhost:8000/get-profile?userId=${currentUser.id}`
         );
-        setName(response.data.name);
-        setEmail(response.data.email);
-        setEducation(response.data.education);
-        setMobile(response.data.mobile);
-        setAddress(response.data.address);
+        setName(response.data.user.name);
+        setEmail(response.data.user.email);
+        setEducation(response.data.user.education);
+        setMobile(response.data.user.mobile);
+        setAddress(response.data.user.address);
 
         _setName(name);
         _setEducation(education);
@@ -50,15 +52,28 @@ const Profile = () => {
         console.log(err);
       }
     }
+
     fetchData();
-  }, [currentUser.id]);
+  }, []);
 
   async function updateProfile(e) {
     e.preventDefault();
+    if (!_name || !_education || !_mobile || !_address) {
+      toast.error('Please fill all the fields');
+      return;
+    }
+
+    // check if phone no. is valid
+    if (!validator.isMobilePhone(_mobile)) {
+      toast.error('Please enter a valid phone no.');
+      return;
+    }
+
     try {
       setIsLoading(true);
-      const response = await axios.get(
-        `http://localhost:8000/get-profile?id=${currentUser.id}`,
+
+      const response = await axios.post(
+        `http://localhost:8000/update-profile?id=${currentUser.id}`,
         {
           name: _name,
           education: _education,
@@ -82,6 +97,7 @@ const Profile = () => {
   return (
     <>
       <Navbar />
+      <ToastContainer />
       <div className='w-full mt-8 flex justify-center items-center mb-10'>
         <Card className='flex justify-center items-center bg-gradient-to-r from-blue-500 to-purple-500'>
           <h1 className='text-4xl font-bold mb-4 mt-7 text-white'>
@@ -153,12 +169,10 @@ const Profile = () => {
                       Mobile
                     </label>
                     <input
-                      type='tel'
+                      type='number'
                       className='border-2 border-gray-300 p-2 w-full'
                       value={_mobile}
-                      onChange={(e) =>
-                        _setMobile(Number.parseInt(e.target.value))
-                      }
+                      onChange={(e) => _setMobile(e.target.value)}
                     />
                   </div>
                   <div className='mb-4'>
@@ -176,7 +190,7 @@ const Profile = () => {
                     onClick={updateProfile}
                     className={`ml-2 px-4 py-2 text-sm font-medium  bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 ${
                       isLoading ? 'bg-blue-400' : 'bg-[#2563EB]'
-                    } text-white hover:bg-primary-700`}
+                    } text-white`}
                     disabled={isLoading}
                   >
                     Update Information
