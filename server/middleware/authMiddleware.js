@@ -10,7 +10,7 @@ const auth = (req, res, next) => {
             }
             else
             {
-                console.log(decodedToken);
+                // console.log(decodedToken);
                 next();
             }
         });
