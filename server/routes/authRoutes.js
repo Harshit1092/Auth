@@ -8,4 +8,5 @@ router.post('/login',authController.login_post);
 router.post('/sendloginotp',authController.sendloginotp_post);
 router.post('/sendsignupotp',authController.sendsignupotp_post);
 router.post('/resendotp',authController.resendotp_post);
+router.get('/logout',authController.logout_get);
 module.exports = router;

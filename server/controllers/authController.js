@@ -268,6 +268,10 @@ const resendotp_post = (req, res) => {
 
 }
 
+const logout_get = (req, res) => {
+    res.cookie('jwt','',{maxAge:1});
+    res.redirect('/login');
+}
 
 module.exports = {
     signup_get,
@@ -276,5 +280,6 @@ module.exports = {
     login_post,
     sendloginotp_post,
     sendsignupotp_post,
-    resendotp_post
+    resendotp_post,
+    logout_get
 };
