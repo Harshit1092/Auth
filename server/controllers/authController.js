@@ -1,7 +1,7 @@
 const User=require('../models/User');
 const jwt=require('jsonwebtoken');
 const UserOTPverification=require('../models/UserOTPverification');
-const bcrypt=require('bcrypt');
+const bcrypt=require('bcryptjs');
 const nodemailer=require('nodemailer');
 const maxAge=3*24*60*60; //jwt token expires in 3 days
 const dotenv=require('dotenv');
@@ -19,6 +19,7 @@ let transporter = nodemailer.createTransport({
         pass:process.env.AUTH_PASS
     }
 });
+
 
 
 const sendverificationotp=async (result,res)=>{
@@ -54,7 +55,7 @@ const sendverificationotp=async (result,res)=>{
     .catch(async (err)=>{
         console.log(err);
         await UserOTPverification.deleteOne({email:result.email})
-        res.status(400).json({error:"something went wrong"});
+        res.status(400).json({error:"something went wrong111"});
     })
     
 
@@ -128,6 +129,8 @@ const signup_post = async (req, res) => {
         }
     }
 }
+
+
 const login_post = async(req, res) => {
     const {email,otp}=req.body;
     if(!email || !otp){
@@ -224,6 +227,7 @@ const sendsignupotp_post = (req, res) => {
         
     }
 }
+
 const sendloginotp_post = (req, res) => {
     // res.send('new login');
     let {email}=req.body;

@@ -10,19 +10,23 @@ import Navbar from './components/Navbar';
 import Profile from './components/Profile';
 import Spinner from './components/Spinner';
 import Sidebar from './components/Sidebar';
+import { AuthContextProvider } from './AuthContext';
+
 function App() {
   return (
-    <div>
-      {/* <Spinner /> */}
-      <Routes>
-        <Route exact path="/MainScreen" Component={MainScreen} />
-        <Route exact path="/" Component={Dashboard} />
-        <Route path="/login" Component={Login} />
-        <Route path="/signup" Component={SignUp} />
-        <Route path="/profile" Component={Profile} />
-        <Route path="/create-blog" Component={Blog} />
-      </Routes>
-    </div>
+    <AuthContextProvider>
+      <div>
+        {/* <Spinner /> */}
+        <Routes>
+          <Route exact path="/MainScreen" Component={MainScreen} />
+          <Route exact path="/" Component={Dashboard} />
+          <Route path="/login" Component={Login} />
+          <Route path="/signup" Component={SignUp} />
+          <Route path="/profile" Component={Profile} />
+          <Route path="/create-blog" Component={Blog} />
+        </Routes>
+      </div>
+    </AuthContextProvider>
   );
 }
 

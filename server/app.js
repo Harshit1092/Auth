@@ -10,6 +10,7 @@ dotenv.config();
 app.use(express.json());
 app.use(cookieParser());
 
+
 const dbURI = process.env.MONGO_URL;
 const port = process.env.PORT || 5000;
 mongoose.connect(dbURI)
@@ -19,6 +20,6 @@ mongoose.connect(dbURI)
   })
   .catch((err) => console.log(err.message));
 
-app.get('/',auth,(req, res) => res.send('home'));
+app.get('/',(req, res) => res.send('home'));
 app.use(authRoutes);
 app.use((req, res) => res.status(404).send('404'));
