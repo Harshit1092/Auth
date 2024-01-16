@@ -23,7 +23,7 @@ mongoose
   })
   .catch((err) => console.log(err.message));
 
-app.get('/', (req, res) => res.send('home'));
-app.use(authRoutes);
+  app.use('/blog',blogRoutes)
+// app.get('/', (req, res) => res.send('home'));
+app.use('/',authRoutes);
 app.use((req, res) => res.status(404).send('404'));
-app.use('/blog',blogRoutes)

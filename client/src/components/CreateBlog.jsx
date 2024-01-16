@@ -8,11 +8,15 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import axios from 'axios';
 import { stateToHTML } from 'draft-js-export-html';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from 'react-toastify';
+import { useAuth } from '../context/AuthContext';
 
 const CreateBlog = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [content, setContent] = useState(EditorState.createEmpty());
+    const { currentUser } = useAuth();
 
     const handleTitleChange = (e) => {
         setTitle(e.target.value);
@@ -26,23 +30,44 @@ const CreateBlog = () => {
         setContent(editorState);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const htmlContent = stateToHTML(content.getCurrentContent());
-        // const htmlContent = convertToHTML(rawContentState);
-        // Handle form submission here
-        // send the blog data to the server
-        const blogData = {
-            title,
-            description,
-            content: htmlContent,
-        };
+        try {
+            console.log("CURRENT USER")
+            const htmlContent = stateToHTML(content.getCurrentContent());
+            // const htmlContent = convertToHTML(rawContentState);
+            // Handle form submission here
+            // send the blog data to the server
+            const blogData = {
+                title,
+                description,
+                content: htmlContent,
+                author: currentUser.name,
+                authorId: currentUser.id
+            };
+            
+            console.log(blogData);
+
+            const response = await axios.post('http://localhost:8000/blog/createBlog',blogData)
+
+            console.log("BLOGS CREATED SUCCESSFULLY", response);
+        }
+        catch(error){
+            console.log(error);
+            toast.error(error.response.data.error);
+        }
+        
+
+
 
         // console.log(content.getCurrentContent().getPlainText());
     };
 
+    
+
     return (
         <>
+        <ToastContainer />
         <Navbar />
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4 mt-2 text-indigo-600">Create Blog</h1>

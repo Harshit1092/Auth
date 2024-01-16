@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Blog = require('../models/Blog')
+const { parse } = require('dotenv')
 
 const getAllBlogs = async (req, res) => {
     try{
@@ -11,15 +12,18 @@ const getAllBlogs = async (req, res) => {
     }
 }
 
-const createBlog = async (req, res) => {
-    const { title, description, content, author } = req.body
 
-    if(!title || !description || !content || !author){
+const createBlog = async (req, res) => {
+    console.log("BACKEND CREATE BLOG", req.body)
+    const { title, description, content, author} = req.body
+    const authorId = parseInt(req.body.authorId)
+    
+    if(!title || !description || !content || !author || !authorId){
         return res.status(400).json({ error: 'Please provide all required fields' })
     }
 
     try{
-        const blog = await Blog.create({ title, description, content, author })
+        const blog = await Blog.create({ title, description, content, author, authorId })
         res.status(201).json(blog)
     }
     catch(error){

@@ -17,6 +17,10 @@ const blogSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please enter a author']
     },
+    authorId: {
+        type: Number,
+        required: [true, 'Please enter a authorID']
+    },
 })
 
 

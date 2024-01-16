@@ -3,6 +3,7 @@ const router = express.Router()
 const {getAllBlogs, createBlog} = require('../controllers/blogController')
 
 
-router.get('/').get(getAllBlogs).post(createBlog)
+router.get('/', getAllBlogs)
+router.post('/createBlog', createBlog)
 
 module.exports = router
