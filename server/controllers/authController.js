@@ -199,11 +199,20 @@ const sendsignupotp_post = (req, res) => {
                 UserOTPverification.findOne({email:email})
                 .then((result)=>{
                     if(result){
-                        return res.status(400).json({error:"otp sent.If you want to resend otp then click on resend otp button."});
+                        if(result.expiresAt>Date.now()){
+                            return res.status(400).json({error:"otp sent.If you want to resend otp then click on resend otp button."});
+                        }
+                        else{
+                            sendverificationotp({email},res);
+                        }
                     }
                     else{
                         sendverificationotp({email},res);
                     }
+                })
+                .catch((err)=>{
+                    console.log(err);
+                    return res.status(400).json({error:"something went wrong"});
                 })
                 
             }
@@ -232,7 +241,12 @@ const sendloginotp_post = (req, res) => {
                 UserOTPverification.findOne({email:email})
                 .then((result)=>{
                     if(result){
-                        return res.status(400).json({error:"otp sent.If you want to resend otp then click on resend otp button."});
+                        if(result.expiresAt>Date.now()){
+                            return res.status(400).json({error:"otp sent.If you want to resend otp then click on resend otp button."});
+                        }
+                        else{
+                            sendverificationotp({email},res);
+                        }
                     }
                     else{
                         sendverificationotp({email},res);
