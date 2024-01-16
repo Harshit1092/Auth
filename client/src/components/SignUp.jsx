@@ -4,9 +4,11 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import validator from 'validator';
 import axios from 'axios';
+import {useAuth} from '../context/AuthContext'
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const {currentUser, signup} = useAuth();
 
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -60,23 +62,15 @@ const SignUp = () => {
           otp,
         }
       );
+      console.log(response)
 
-      console.log("signup",response);
+      signup(response.data)
 
-      localStorage.setItem('token', JSON.stringify(response.data));
-
-      navigate('/login');
+      navigate('/');
     } catch (error) {
         console.log(error.response.data.error)
         toast.error(error.response.data.error);
     }
-
-    // console.log(user);
-
-    // setName('');
-    // setEmail('');
-    // setPassword('');
-    // setConfirmPassword('');
   };
 
   const handleSendOTP = async (e) => {

@@ -11,10 +11,14 @@ import Profile from './components/Profile';
 import Spinner from './components/Spinner';
 import Sidebar from './components/Sidebar';
 import AuthContextProvider from './context/AuthContext';
+import {useContext} from 'react'
+
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
+
   return (
-    <AuthContextProvider>
+    <AuthProvider>
       <div>
         {/* <Spinner /> */}
         <Routes>
@@ -26,7 +30,7 @@ function App() {
           <Route path='/create-blog' Component={Blog} />
         </Routes>
       </div>
-    </AuthContextProvider>
+    </AuthProvider>
   );
 }
 

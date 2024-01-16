@@ -1,28 +1,49 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
-const AuthContextProvider = ({ children }) => {
+const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-
+  
+  // You might want to load the current user from local storage or an API on component mount
   useEffect(() => {
-    // Get user from localStorage on component mount
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem('token');
     if (storedUser) {
       setCurrentUser(JSON.parse(storedUser));
     }
   }, []);
 
-    useEffect(() => {
-        // Store user in localStorage whenever it changes
-        localStorage.setItem('user', JSON.stringify(currentUser));
-    }, [currentUser]);
+  const signup = (user) => {
+    setCurrentUser(user);
+    localStorage.setItem('token', JSON.stringify(user));
+  }
 
-  return (
-    <AuthContext.Provider value={{ currentUser, setCurrentUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  const login = (user) => {
+    setCurrentUser(user);
+    localStorage.setItem('token', JSON.stringify(user));
+  };
+
+  const logout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem('token');
+  };
+
+  const value = {
+    currentUser,
+    signup,
+    login,
+    logout,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export default AuthContextProvider;
+const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
+export { AuthProvider, useAuth };
