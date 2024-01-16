@@ -269,6 +269,7 @@ const SignUp = () => {
                         isLoading ? 'bg-blue-400' : 'bg-[#2563EB]'
                       } text-white hover:bg-primary-700`}
                       onClick={handleSendOTP}
+                      disabled={isLoading}
                     >
                       Send OTP
                     </button>
@@ -281,6 +282,7 @@ const SignUp = () => {
                       isLoading3 ? 'bg-blue-400' : 'bg-[#2563EB]'
                     } text-white hover:bg-primary-700`}
                     onClick={onResendOTP}
+                    disabled={isLoading3}
                   >
                     Resend otp
                   </button>
@@ -315,6 +317,7 @@ const SignUp = () => {
                   className={`w-full ${
                     isLoading2 ? 'bg-blue-400' : 'bg-[#2563EB]'
                   } text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800`}
+                  disabled={isLoading2}
                 >
                   Create an account
                 </button>
