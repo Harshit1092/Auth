@@ -292,6 +292,22 @@ const logout_get = (req, res) => {
   res.redirect('/login');
 };
 
+
+const getProfileInfo = async (req, res) => {
+  try {
+    const id = req.query.userId;
+    const user = await User.findById(id);
+
+    if (!user) {
+      res.status(400).json({ error: "User not found" });
+    }
+
+    res.status(200).json({ user }); 
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 module.exports = {
   signup_get,
   login_get,
@@ -301,4 +317,5 @@ module.exports = {
   sendsignupotp_post,
   resendotp_post,
   logout_get,
+  getProfileInfo
 };

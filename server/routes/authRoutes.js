@@ -15,4 +15,6 @@ router.post('/sendsignupotp',authController.sendsignupotp_post);
 // We'll remove this
 router.post('/resendotp',authController.resendotp_post);
 router.get('/logout',authController.logout_get);
+
+router.get('/get-profile',authController.getProfileInfo)
 module.exports = router;
