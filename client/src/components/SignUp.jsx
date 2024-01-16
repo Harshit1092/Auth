@@ -11,6 +11,7 @@ const SignUp = () => {
   const { currentUser, signup } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isLoading2, setIsLoading2] = useState(false);
+  const [isLoading3, setIsLoading3] = useState(false);
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -101,6 +102,21 @@ const SignUp = () => {
       setIsLoading(false);
     }
   };
+
+  async function onResendOTP(e) {
+    e.preventDefault();
+    try {
+      setIsLoading3(true);
+      const response = await axios.post('http://localhost:8000/resendotp', {
+        email: email,
+      });
+      toast.success('OTP sent successfully 🥰');
+    } catch (error) {
+      toast.error(error.response.data.error);
+    } finally {
+      setIsLoading3(false);
+    }
+  }
 
   return (
     <div>
@@ -260,7 +276,12 @@ const SignUp = () => {
                 </div>
 
                 {otpSent && (
-                  <button className='ml-2 px-4 py-2 text-sm font-medium  bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 bg-[#2563EB] text-white hover:bg-primary-700'>
+                  <button
+                    className={`ml-2 px-4 py-2 text-sm font-medium  bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 ${
+                      isLoading3 ? 'bg-blue-400' : 'bg-[#2563EB]'
+                    } text-white hover:bg-primary-700`}
+                    onClick={onResendOTP}
+                  >
                     Resend otp
                   </button>
                 )}
