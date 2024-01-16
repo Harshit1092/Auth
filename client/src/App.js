@@ -1,36 +1,54 @@
-import { Routes, Route } from 'react-router-dom';
 import React from 'react';
-import Dashboard from './components/Dashboard';
-import MainScreen from './screens/MainScreen';
-import Login from './components/Login';
-import SignUp from './components/SignUp';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import Blog from './components/CreateBlog';
-import Blogs from './components/Blogs';
-import Navbar from './components/Navbar';
+import Dashboard from './components/Dashboard';
+import Login from './components/Login';
 import Profile from './components/Profile';
-import Spinner from './components/Spinner';
-import Sidebar from './components/Sidebar';
-import AuthContextProvider from './context/AuthContext';
-import {useContext} from 'react'
-
-import { AuthProvider } from './context/AuthContext';
+import SignUp from './components/SignUp';
+import MainScreen from './screens/MainScreen';
+import { useAuth } from './context/AuthContext';
 
 function App() {
-
+  const { currentUser } = useAuth();
+  console.log(currentUser);
   return (
-    <AuthProvider>
-      <div>
-        {/* <Spinner /> */}
-        <Routes>
-          <Route exact path='/MainScreen' Component={MainScreen} />
-          <Route exact path='/' Component={Dashboard} />
-          <Route path='/login' Component={Login} />
-          <Route path='/signup' Component={SignUp} />
-          <Route path='/profile' Component={Profile} />
-          <Route path='/create-blog' Component={Blog} />
-        </Routes>
-      </div>
-    </AuthProvider>
+    <div>
+      {/* <Spinner /> */}
+      <Routes>
+        <Route
+          exact
+          path='/MainScreen'
+          element={
+            currentUser ? <MainScreen /> : <Navigate to='/login' replace />
+          }
+        />
+        <Route
+          exact
+          path='/'
+          element={
+            currentUser ? <Dashboard /> : <Navigate to='/login' replace />
+          }
+        />
+        <Route
+          exact
+          path='/profile'
+          element={currentUser ? <Profile /> : <Navigate to='/login' replace />}
+        />
+        <Route
+          exact
+          path='/create-blog'
+          element={currentUser ? <Blog /> : <Navigate to='/login' replace />}
+        />
+        <Route
+          path='/login'
+          element={currentUser ? <Navigate to='/' replace /> : <Login />}
+        />
+        <Route
+          path='/signup'
+          element={currentUser ? <Navigate to='/' replace /> : <SignUp />}
+        />
+      </Routes>
+    </div>
   );
 }
 
