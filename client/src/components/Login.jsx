@@ -4,9 +4,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import validator from 'validator';
 import { toast, ToastContainer } from 'react-toastify';
 import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 
 const Login = () => {
+  const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,12 +40,12 @@ const Login = () => {
 
       try {
         setIsLoading2(true);
-        await axios.post('http://localhost:8000/login', user);
+        const response = await axios.post('http://localhost:8000/login', user);
         /*
         login stuff
         here we'll set the reponse
          */
-
+        login(response.data);
         navigate('/');
       } catch (error) {
         toast.error(error.response.data.error);
@@ -164,7 +166,7 @@ const Login = () => {
                 </div>
                 <div className='flex items-center justify-between'>
                   <div className='flex items-start'>
-                    <div className='flex items-center h-5'>
+                    {/* <div className='flex items-center h-5'>
                       <input
                         id='remember'
                         aria-describedby='remember'
@@ -174,13 +176,13 @@ const Login = () => {
                       />
                     </div>
                     <div className='ml-3 text-sm'>
-                      {/* <label
+                      <label
                         htmlFor='remember'
                         className='text-gray-500 dark:text-gray-300'
                       >
                         Remember me
-                      </label> */}
-                    </div>
+                      </label>
+                    </div> */}
                   </div>
                   <Link
                     to='#'

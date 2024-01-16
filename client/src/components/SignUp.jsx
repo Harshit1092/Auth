@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import validator from 'validator';
 import axios from 'axios';
-import {useAuth} from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext';
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const {currentUser, signup} = useAuth();
-
+  const { currentUser, signup } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading2, setIsLoading2] = useState(false);
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -24,6 +25,7 @@ const SignUp = () => {
     e.preventDefault();
 
     try {
+      setIsLoading2(true);
       const user = { name, email, education, phone, otp };
 
       console.log(validator.isEmail(email));
@@ -52,54 +54,52 @@ const SignUp = () => {
       }
 
       // make an axios request to the backend
-      const response = await axios.post(
-        'http://localhost:8000/signup',
-        {
-          name,
-          email,
-          education,
-          phone,
-          otp,
-        }
-      );
-      console.log(response)
+      const response = await axios.post('http://localhost:8000/signup', {
+        name,
+        email,
+        education,
+        phone,
+        otp,
+      });
+      console.log(response);
 
-      signup(response.data)
+      signup(response.data);
 
       navigate('/');
     } catch (error) {
-        console.log(error.response.data.error)
-        toast.error(error.response.data.error);
+      console.log(error.response.data.error);
+      toast.error(error.response.data.error);
+    } finally {
+      setIsLoading2(false);
     }
   };
 
   const handleSendOTP = async (e) => {
     e.preventDefault();
     try {
-        if (!validator.isEmail(email)) {
-            console.log('email is not valid');
-            toast.error('Please enter a valid email');
-            return;
-          }
-      
-          const respone = await axios.post(
-              'http://localhost:8000/sendsignupotp',
-              {
-                email : email
-              }
-          )
-      
-          console.log("OTP : ", respone);
-          
-          // console.log('OTP sent');
-          // toast.success('OTP sent successfully');
-          setOtpSent(true); // Update OTP sent state
+      setIsLoading(true);
+      if (!validator.isEmail(email)) {
+        console.log('email is not valid');
+        toast.error('Please enter a valid email');
+        return;
+      }
+
+      const respone = await axios.post('http://localhost:8000/sendsignupotp', {
+        email: email,
+      });
+
+      console.log('OTP : ', respone);
+
+      // console.log('OTP sent');
+      // toast.success('OTP sent successfully');
+      setOtpSent(true); // Update OTP sent state
+      toast.success('OTP sent successfully 🥰');
+    } catch (error) {
+      console.log(error.response.data.error);
+      toast.error(error.response.data.error);
+    } finally {
+      setIsLoading(false);
     }
-    catch(error){
-        console.log(error.response.data.error)
-        toast.error(error.response.data.error);
-    }
-    
   };
 
   return (
@@ -249,7 +249,9 @@ const SignUp = () => {
                     />
                     <button
                       type='button'
-                      className='ml-2 px-4 py-2 text-sm font-medium  bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 bg-[#2563EB] text-white hover:bg-primary-700  '
+                      className={`ml-2 px-4 py-2 text-sm font-medium  bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 ${
+                        isLoading ? 'bg-blue-400' : 'bg-[#2563EB]'
+                      } text-white hover:bg-primary-700`}
                       onClick={handleSendOTP}
                     >
                       Send OTP
@@ -289,7 +291,9 @@ const SignUp = () => {
                 </div>
                 <button
                   type='submit'
-                  className='w-full bg-[#2563EB] text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800'
+                  className={`w-full ${
+                    isLoading2 ? 'bg-blue-400' : 'bg-[#2563EB]'
+                  } text-white hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800`}
                 >
                   Create an account
                 </button>
