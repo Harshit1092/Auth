@@ -3,18 +3,19 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser') 
 const authRoutes = require('./routes/authRoutes');
 const {auth} = require('./middleware/authMiddleware');
+const dotenv=require('dotenv');
 
 const app = express();
-
+dotenv.config();
 app.use(express.json());
 app.use(cookieParser());
 
-const dbURI = 'mongodb+srv://harshit:09200920@cluster0.1zcmrpe.mongodb.net/Auth';
-
+const dbURI = process.env.MONGO_URL;
+const port = process.env.PORT || 5000;
 mongoose.connect(dbURI)
   .then((result) => {
     console.log('connected to db');  
-    app.listen(3000);
+    app.listen(port);
   })
   .catch((err) => console.log(err.message));
 

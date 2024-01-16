@@ -4,6 +4,9 @@ const UserOTPverification=require('../models/UserOTPverification');
 const bcrypt=require('bcrypt');
 const nodemailer=require('nodemailer');
 const maxAge=3*24*60*60; //jwt token expires in 3 days
+const dotenv=require('dotenv');
+dotenv.config();
+
 
 const createToken =(id)=>{
     return jwt.sign({id},'secret key from my side',{expiresIn :  maxAge})
@@ -12,8 +15,8 @@ const createToken =(id)=>{
 let transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     auth:{
-        user:'dep24p02@gmail.com',
-        pass:'xavymfiylqyrcpvw'
+        user:process.env.AUTH_USER,
+        pass:process.env.AUTH_PASS
     }
 });
 
@@ -22,7 +25,7 @@ const sendverificationotp=async (result,res)=>{
     const otp=Math.floor(100000 + Math.random() * 900000);
 
     let mailOptions = {
-        from: 'dep24p02@gmail.com',
+        from: process.env.AUTH_USER,
         to: result.email, 
         subject: 'OTP for verification',
         html: `<p>OTP for verification in our app is <b>${otp}</b> .</p>
@@ -45,12 +48,12 @@ const sendverificationotp=async (result,res)=>{
         await newotp.save();
     }
     await transporter.sendMail(mailOptions)
-    .then((result)=>{
-        console.log(result);
+    .then((data)=>{
         res.status(200).json({message:"otp sent successfully"});
     })
-    .catch((err)=>{
+    .catch(async (err)=>{
         console.log(err);
+        await UserOTPverification.deleteOne({email:result.email})
         res.status(400).json({error:"something went wrong"});
     })
     
