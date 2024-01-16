@@ -1,4 +1,3 @@
-
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
@@ -13,11 +12,14 @@ const SignUp = () => {
     const [email,setEmail] = React.useState('');
     const [password,setPassword] = React.useState('');
     const [confirmPassword,setConfirmPassword] = React.useState('');
+    const [education, setEducation] = React.useState('');
+    const [phone, setPhone] = React.useState('');
+    const [otp,setOtp] = React.useState('');
     const [acceptedTerms, setAcceptedTerms] = React.useState(false); // Add state for accepted terms
-
+    
     const handleSubmit = (e) => {
         e.preventDefault();
-        const user = {name,email,password,confirmPassword};
+        const user = {name,email,education,phone, otp};
         
         console.log(validator.isEmail(email))
 
@@ -27,14 +29,14 @@ const SignUp = () => {
             return;
         }
 
-        if(!email || !password || !confirmPassword){
+        if(!name || !email || !education || !phone || !otp){
             toast.error('Please fill all the fields');
             return;
         }
-        if(password !== confirmPassword){
-            toast.error('Password and Confirm Password does not match');
-            return;
-        }
+        // if(password !== confirmPassword){
+        //     toast.error('Password and Confirm Password does not match');
+        //     return;
+        // }
 
         if(!acceptedTerms){ // Check if terms are accepted
             toast.error('Please accept the terms and conditions');
@@ -52,11 +54,22 @@ const SignUp = () => {
         navigate('/login');
     }
 
+    const handleSendOTP = (e) => {
+        e.preventDefault();
+        if(!validator.isEmail(email)){
+            console.log('email is not valid');
+            toast.error('Please enter a valid email');
+            return;
+        }
+        console.log('OTP sent');
+        toast.success('OTP sent successfully');
+    }
+
     return (
         <div>
             <ToastContainer />
             <section className="bg-gray-50 dark:bg-gray-900">
-                <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+                <div className="flex flex-col items-center justify-center px-6 py-8">
                 <div
                     className="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white"
                 >
@@ -112,6 +125,42 @@ const SignUp = () => {
                                 </div>
                                 <div>
                                     <label
+                                        htmlFor="education"
+                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                    >
+                                        Education
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="education"
+                                        value={education}
+                                        id="education"
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="abc School"
+                                        required={true}
+                                        onChange={(e) => setName(e.target.value)}
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                        htmlFor="text"
+                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                    >
+                                        Phone no.
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="phone"
+                                        value={phone}
+                                        id="phone"
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        placeholder="1234567890"
+                                        required={true}
+                                        onChange={(e) => setName(e.target.value)}
+                                    />
+                                </div>
+                                {/* <div>
+                                    <label
                                         htmlFor="password"
                                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                                     >
@@ -145,6 +194,33 @@ const SignUp = () => {
                                         required={true}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                     />
+                                </div> */}
+                                <div>
+                                    <label
+                                        htmlFor="otp"
+                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                    >
+                                        OTP
+                                    </label>
+                                    <div className="flex">
+                                        <input
+                                            type="text"
+                                            name="otp"
+                                            value={otp}
+                                            id="otp"
+                                            className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            placeholder="Enter OTP"
+                                            required={true}
+                                            onChange={(e) => setOtp(e.target.value)}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="ml-2 px-4 py-2 text-sm font-medium  bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 bg-[#2563EB] text-white hover:bg-primary-700  "
+                                            onClick={handleSendOTP}
+                                        >
+                                            Send OTP
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className="flex items-start">
                                     <div className="flex items-center h-5">

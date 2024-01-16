@@ -11,6 +11,7 @@ const Login = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [otp, setOtp] = useState('');
 
     const handleEmailChange = (e) => {
         setEmail(e.target.value);
@@ -34,6 +35,21 @@ const Login = () => {
             const user = {
                 email,
                 password,
+            };
+            console.log(user);
+        }
+    }
+
+    const handleSendOTP = (e) => {
+        e.preventDefault();
+        if (email.trim() === '') {
+            toast.error('Please enter your email address');
+        } else if (!validator.isEmail(email)) {
+            toast.error('Please enter a valid email address');
+        } else {
+            // submit the form
+            const user = {
+                email,
             };
             console.log(user);
         }
@@ -78,7 +94,7 @@ const Login = () => {
                                     onChange={handleEmailChange}
                                 />
                             </div>
-                            <div>
+                            {/* <div>
                                 <label
                                     htmlFor="password"
                                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -95,7 +111,34 @@ const Login = () => {
                                     value={password}
                                     onChange={handlePasswordChange}
                                 />
-                            </div>
+                            </div> */}
+                            <div>
+                                    <label
+                                        htmlFor="otp"
+                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                    >
+                                        OTP
+                                    </label>
+                                    <div className="flex">
+                                        <input
+                                            type="text"
+                                            name="otp"
+                                            value={otp}
+                                            id="otp"
+                                            className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                            placeholder="Enter OTP"
+                                            required={true}
+                                            onChange={(e) => setOtp(e.target.value)}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="ml-2 px-4 py-2 text-sm font-medium  bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 bg-[#2563EB] text-white hover:bg-primary-700  "
+                                            onClick={handleSendOTP}
+                                        >
+                                            Send OTP
+                                        </button>
+                                    </div>
+                                </div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-start">
                                     <div className="flex items-center h-5">
