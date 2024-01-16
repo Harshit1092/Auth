@@ -68,64 +68,68 @@ const login_get = (req, res) => {
   res.send('login');
 };
 const signup_post = async (req, res) => {
-  const { email, name, education, mobile, otp } = req.body;
-  if (!email || !otp) {
-    res.status(400).json('please enter email and otp');
-  } else {
-    const result = await User.findOne({ email: email });
-
-    if (result) {
-      return res
-        .status(400)
-        .json({ error: 'User already exist.Please login.' });
-    } else {
-      const UserOTPverify = await UserOTPverification.findOne({ email: email });
-      if (UserOTPverify) {
-        const { _id, expiresAt } = UserOTPverify;
-        const hasedOTP = UserOTPverify.otp;
-        if (expiresAt <= Date.now()) {
-          await UserOTPverify.deleteOne({ _id });
-          return res.status(400).json({ error: 'otp expired' });
-        } else {
-          const isvalid = await bcrypt.compare(otp.toString(), hasedOTP);
-          if (isvalid) {
-            const newuser = new User({
-              email,
-              name,
-              education,
-              mobile,
-            });
-            newuser
-              .save()
-              .then((result) => {
-                try {
-                  const token = createToken(result._id);
-                  res.cookie('jwt', token, {
-                    httpOnly: true,
-                    maxAge: maxAge * 1000,
-                  });
-                  return res.status(201).json({ user: result.email });
-                } catch (err) {
-                  res.status(400).json({ error: err });
-                }
-              })
-              .catch((err) => {
-                console.log(err);
-                return res.status(400).json({ error: 'something went wrong' });
-              });
-            await UserOTPverify.deleteOne({ _id });
-          } else {
-            return res.status(400).json({ error: 'invalid otp' });
-          }
-        }
-      } else {
-        return res
-          .status(400)
-          .json({ error: 'OTP not sent. please send otp again' });
-      }
+    const {email,name,education,mobile,otp}=req.body;
+    if(!email || !otp){
+        res.status(400).json('please enter email and otp');
     }
-  }
-};
+    else{
+        const result=await User.findOne({email:email})
+        
+        if(result){
+            return res.status(400).json({error:"User already exist.Please login."});
+        }
+        else{
+            
+            const UserOTPverify=await UserOTPverification.findOne({email:email});
+            if(UserOTPverify){
+                const {_id,expiresAt}=UserOTPverify;
+                const hasedOTP=UserOTPverify.otp;
+                if(expiresAt<=Date.now()){ 
+                    await UserOTPverify.deleteOne({_id});
+                    return res.status(400).json({error:"otp expired"});
+                }
+                else{
+                    const isvalid=await bcrypt.compare(otp.toString(),hasedOTP);
+                    if(isvalid){
+                        const newuser=new User(
+                            {
+                                email,
+                                name,
+                                education,
+                                mobile
+                            }
+                        );
+                        newuser.save()
+                        .then((result)=>{
+                            try{
+                                const token=createToken(result._id);
+                                res.cookie('jwt',token,{httpOnly:true,maxAge:maxAge*1000});
+                                return res.status(201).json({email:result.email});
+                            }
+                            catch(err){
+                                res.status(400).json({error:err});
+                            }
+                        })
+                        .catch((err)=>{
+                            console.log(err);
+                            return res.status(400).json({error:"something went wrong"});
+                        })
+                        await UserOTPverify.deleteOne({_id});
+                    }
+                    else{
+                        return res.status(400).json({error:"invalid otp"});
+                    }
+
+                }
+
+            }
+            else{
+                return res.status(400).json({error:"OTP not sent. please send otp again"});
+            }
+        }
+    }
+}
+
 
 const login_post = async (req, res) => {
   const { email, otp } = req.body;
@@ -180,45 +184,46 @@ const login_post = async (req, res) => {
   }
 };
 const sendsignupotp_post = (req, res) => {
-  // res.send('new login');
-  let { email } = req.body;
-  if (!email) {
-    return res.status(400).json({ error: 'please add email' });
-  } else {
-    User.findOne({ email: email })
-      .then((result) => {
-        if (result) {
-          return res
-            .status(400)
-            .json({ error: 'User already exist.Please login.' });
-        } else {
-          UserOTPverification.findOne({ email: email })
-            .then((result) => {
-              if (result) {
-                if (result.expiresAt > Date.now()) {
-                  return res.status(400).json({
-                    error:
-                      'otp sent.If you want to resend otp then click on resend otp button.',
-                  });
-                } else {
-                  sendverificationotp({ email }, res);
-                }
-              } else {
-                sendverificationotp({ email }, res);
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-              return res.status(400).json({ error: 'something went wrong' });
-            });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        return res.status(400).json({ error: 'something went wrong' });
-      });
-  }
-};
+    // res.send('new login');
+    let {email}=req.body;
+    if(!email){
+        return res.status(400).json({error:"please add email"});
+    }
+    else{
+        User.findOne({email:email})
+        .then((result)=>{
+            if(result){
+                return res.status(400).json({error:"User already exist.Please login."});
+            }
+            else{
+                UserOTPverification.findOne({email:email})
+                .then((result)=>{
+                    if(result){
+                        if(result.expiresAt>Date.now()){
+                            return res.status(400).json({error:"otp sent.If you want to resend otp then click on resend otp button."});
+                        }
+                        else{
+                            sendverificationotp({email},res);
+                        }
+                    }
+                    else{
+                        sendverificationotp({email},res);
+                    }
+                })
+                .catch((err)=>{
+                    console.log(err);
+                    return res.status(400).json({error:"something went wrong"});
+                })
+                
+            }
+        })
+        .catch((err)=>{
+            console.log(err);
+            return res.status(400).json({error:"something went wrong"});
+        })
+        
+    }
+}
 
 const sendloginotp_post = (req, res) => {
   // res.send('new login');

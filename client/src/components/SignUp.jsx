@@ -51,7 +51,7 @@ const SignUp = () => {
 
       // make an axios request to the backend
       const response = await axios.post(
-        'http://localhost:8000/api/auth/register',
+        'http://localhost:8000/signup',
         {
           name,
           email,
@@ -61,12 +61,14 @@ const SignUp = () => {
         }
       );
 
-      console.log(response.data);
+      console.log("signup",response);
 
       // localStorage.setItem('token', JSON.stringify(response));
 
       navigate('/login');
-    } catch (error) {}
+    } catch (error) {
+        console.log(error)
+    }
 
     // console.log(user);
 
@@ -76,16 +78,32 @@ const SignUp = () => {
     // setConfirmPassword('');
   };
 
-  const handleSendOTP = (e) => {
+  const handleSendOTP = async (e) => {
     e.preventDefault();
-    if (!validator.isEmail(email)) {
-      console.log('email is not valid');
-      toast.error('Please enter a valid email');
-      return;
+    try {
+        if (!validator.isEmail(email)) {
+            console.log('email is not valid');
+            toast.error('Please enter a valid email');
+            return;
+          }
+      
+          const respone = await axios.post(
+              'http://localhost:8000/sendsignupotp',
+              {
+                email : email
+              }
+          )
+      
+          console.log("OTP : ", respone);
+          
+          // console.log('OTP sent');
+          // toast.success('OTP sent successfully');
+          setOtpSent(true); // Update OTP sent state
     }
-    console.log('OTP sent');
-    toast.success('OTP sent successfully');
-    setOtpSent(true); // Update OTP sent state
+    catch(error){
+        console.log(error)
+    }
+    
   };
 
   return (

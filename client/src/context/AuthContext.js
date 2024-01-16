@@ -13,10 +13,10 @@ const AuthContextProvider = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-    // Store user in localStorage whenever it changes
-    localStorage.setItem('user', JSON.stringify(currentUser));
-  }, [currentUser]);
+    useEffect(() => {
+        // Store user in localStorage whenever it changes
+        localStorage.setItem('user', JSON.stringify(currentUser));
+    }, [currentUser]);
 
   return (
     <AuthContext.Provider value={{ currentUser, setCurrentUser }}>
