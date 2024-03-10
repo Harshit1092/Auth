@@ -54,7 +54,7 @@ const MainScreen = () => {
                 </div>
             </div>
 
-            <div className="bg-gray-300 py-20">
+            {/* <div className="bg-gray-300 py-20">
                 <div className="container mx-auto px-4">
                     <h2 className="text-3xl font-bold mb-8">Latest Updates</h2>
                     <div className="grid grid-cols-4 gap-8">
@@ -77,6 +77,15 @@ const MainScreen = () => {
                     </div>
                 </div>
             </div>
+
+            <div className="bg-gray-400 py-20">
+                <div className="container mx-auto px-4">
+                    <h2 className="text-3xl font-bold mb-8">Moving Section</h2>
+                    <div className="flex items-center justify-center">
+                        <img src="https://example.com/moving-image.svg" alt="Moving Image" className="w-64 h-64 animate-spin" />
+                    </div>
+                </div>
+            </div> */}
 
             <Footer />
         </div>

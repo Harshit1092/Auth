@@ -7,7 +7,6 @@ import Profile from './components/Profile';
 import SignUp from './components/SignUp';
 import MainScreen from './screens/MainScreen';
 import { useAuth } from './context/AuthContext';
-
 function App() {
   const { currentUser } = useAuth();
   console.log(currentUser);
